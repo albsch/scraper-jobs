@@ -10,3 +10,6 @@ To fix the keys on startup, create a 'fefe.args' file and define these two keys 
 bot-token=...
 recipient=...
 ```
+
+# Flow Graph:
+![image](https://user-images.githubusercontent.com/38429047/76775323-7b0dfb00-67a5-11ea-8e37-438211fc7234.png)
