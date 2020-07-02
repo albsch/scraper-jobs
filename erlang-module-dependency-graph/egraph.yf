@@ -1,0 +1,149 @@
+name: emodgraph
+graphs:
+  start:
+    - type: EchoNode
+      log:
+        source: "Gathering modules at {src-files-root}"
+        glob: "Glob: {src-files-glob}"
+
+    - type: PipeNode
+      pipeTargets: [get-modules, get-variable-mod-calls, get-static-mod-calls, get-supervisor-calls]
+
+    - type: ErlangDependencyGraphNode
+
+  get-module-name:
+    - type: RegexNode
+      content: "{element}"
+      regex:  (.*\/)?(\w+)\.erl
+      output: "output"
+      groups: { "module": 2 }
+
+    - { type: "EchoNode", put: "module", value: "{{{output}}[0]@module}" }
+
+
+
+
+  get-modules:
+    - type: PathGlobFileNode
+      includeRoot: true
+      root: "{src-files-root}"
+      glob: "{src-files-glob}"
+      output: "result"
+
+    - type: MapJoinNode
+      putElement: element
+      list: "{result}"
+      mapTarget: "get-module-name"
+      keys: { module: "modules" }
+
+
+
+
+  get-supervisor-calls:
+    - type: MapJoinNode
+      putElement: element
+      list: "{result}"
+      mapTarget: "filter-supervisor-calls"
+      keys: { supervisor-calls: "supervisor-calls" }
+    - { type: "FlattenListNode", flatten: "{supervisor-calls}", output: "supervisor-calls" }
+
+  filter-supervisor-calls:
+    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
+    - type: RegexNode
+      content: "{result}"
+      regex: \{(\w+),\s*start_link,
+      output: supervisor-calls-1
+      groups: { supervisor-module: 1 }
+    - type: RegexNode
+      content: "{result}"
+      regex: \?\w*\((\w+),(worker|supervisor)\)
+      output: supervisor-calls-2
+      groups: { supervisor-module: 1 }
+    - { type: "FlattenListNode", flatten: ["{supervisor-calls-1}","{supervisor-calls-2}"], output: "supervisor-calls" }
+
+    - type: ForkJoinNode
+      forkTargets: [get-module-name]
+      targetToKeys: {get-module-name: {module: module}}
+
+    - type: MapJoinNode
+      mapTarget: "combine-supervisor-calls"
+      putElement: "element"
+      list: "{supervisor-calls}"
+      keys: { "supervisor-call": "supervisor-calls" }
+
+  combine-supervisor-calls:
+    - type: EchoNode
+      put: supervisor-call
+      value: "{module}->{{element}@supervisor-module}"
+
+
+
+
+  get-variable-mod-calls:
+    - type: MapJoinNode
+      putElement: element
+      list: "{result}"
+      mapTarget: "filter-variable-mod-calls"
+      keys: { variable-mod-calls: "variable-mod-calls" }
+    - { type: "FlattenListNode", flatten: "{variable-mod-calls}", output: "variable-mod-calls" }
+
+
+  filter-variable-mod-calls:
+    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
+    - type: RegexNode
+      content: "{result}"
+      regex: ([A-Z]+\w*):\s*\w*\(
+      output: "variable-mod-calls"
+      "groups": { variable-module: 1 }
+
+    - type: ForkJoinNode
+      forkTargets: [get-module-name]
+      targetToKeys: {get-module-name: {module: module}}
+
+    - type: MapJoinNode
+      mapTarget: "combine-variable-mod-calls"
+      putElement: "element"
+      list: "{variable-mod-calls}"
+      keys: { "variable-mod-call": "variable-mod-calls" }
+
+  combine-variable-mod-calls:
+    - type: EchoNode
+      put: variable-mod-call
+      value: "{module}->{{element}@variable-module}"
+
+
+
+
+
+
+
+  get-static-mod-calls:
+    - type: MapJoinNode
+      putElement: element
+      list: "{result}"
+      mapTarget: "filter-static-mod-calls"
+      keys: { static-mod-calls: "static-mod-calls" }
+    - { type: "FlattenListNode", flatten: "{static-mod-calls}", output: "static-mod-calls" }
+
+  filter-static-mod-calls:
+    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
+    - type: RegexNode
+      content: "{result}"
+      regex: \s([a-z0-9_]+):\s*\w*\(
+      output: "static-mod-calls"
+      "groups": { static-module: 1 }
+
+    - type: ForkJoinNode
+      forkTargets: [get-module-name]
+      targetToKeys: {get-module-name: {module: module}}
+
+    - type: MapJoinNode
+      mapTarget: "combine-static-mod-calls"
+      putElement: "element"
+      list: "{static-mod-calls}"
+      keys: { "static-mod-call": "static-mod-calls" }
+
+  combine-static-mod-calls:
+    - type: EchoNode
+      put: static-mod-call
+      value: "{module}->{{element}@static-module}"

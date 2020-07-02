@@ -1,0 +1,2 @@
+src-files-glob=glob:**/*.erl
+src-files-root=git/riak_core_lite/src/

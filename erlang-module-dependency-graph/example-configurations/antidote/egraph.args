@@ -1,0 +1,13 @@
+src-files-glob=glob:**/*.erl
+src-files-root=git/antidote/src/
+
+DC_META_UTIL=dc_meta_data_utilities
+DC_UTIL=dc_utilities
+VECTORCLOCK=vectorclock
+LOG_UTIL=log_utilities
+CLOCKSI_VNODE=clocksi_vnode
+CLOCKSI_DOWNSTREAM=clocksi_downstream
+LOGGING_VNODE=logging_vnode
+PROMETHEUS_GAUGE=prometheus_gauge
+PROMETHEUS_COUNTER=prometheus_counter
+DATA_TYPE=antidote_crdt_counter_b

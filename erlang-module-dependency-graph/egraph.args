@@ -1,0 +1,4 @@
+src-files-glob=glob:**/*.erl
+src-files-root=src/
+
+
