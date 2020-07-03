@@ -7,9 +7,21 @@ graphs:
         glob: "Glob: {src-files-glob}"
 
     - type: PipeNode
-      pipeTargets: [get-modules, get-variable-mod-calls, get-static-mod-calls, get-supervisor-calls]
+      pipeTargets: [get-modules]
+
+    - type: ForkJoinNode
+      forkTargets: [ static-mods, variable-mods, supervisor-mods ]
+      targetToKeys:
+        static-mods: { calls: static-mod-calls }
+        variable-mods: { calls: variable-mod-calls }
+        supervisor-mods: { calls: supervisor-calls }
 
     - type: ErlangDependencyGraphNode
+
+  static-mods: [ { type: EchoNode, put: redirect, value: static, goTo: get-calls} ]
+  variable-mods: [ { type: EchoNode, put: redirect, value: variable, goTo: get-calls} ]
+  supervisor-mods: [ { type: EchoNode, put: redirect, value: supervisor, goTo: get-calls} ]
+
 
   get-module-name:
     - type: RegexNode
@@ -38,112 +50,70 @@ graphs:
 
 
 
-
-  get-supervisor-calls:
+  get-calls:
     - type: MapJoinNode
       putElement: element
       list: "{result}"
-      mapTarget: "filter-supervisor-calls"
-      keys: { supervisor-calls: "supervisor-calls" }
-    - { type: "FlattenListNode", flatten: "{supervisor-calls}", output: "supervisor-calls" }
+      mapTarget: "filter-calls"
+      keys: { calls: "calls" }
+    - { type: "FlattenListNode", flatten: "{calls}", output: "calls" }
+
+
+
+  filter-calls:
+    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
+
+    - type: RedirectNode
+      redirectMap:
+        static: filter-static-calls
+        variable: filter-variable-calls
+        supervisor: filter-supervisor-calls
+
+    - type: ForkJoinNode
+      forkTargets: [get-module-name]
+      targetToKeys: {get-module-name: {module: module}}
+
+    - type: MapJoinNode
+      mapTarget: "combine-calls"
+      putElement: "element"
+      list: "{calls}"
+      keys: { "mod-call": "calls" }
+
+
+  combine-calls:
+    - type: EchoNode
+      put: mod-call
+      value: "{module}->{{element}@module}"
+
+
+
 
   filter-supervisor-calls:
-    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
     - type: RegexNode
       content: "{result}"
       regex: \{(\w+),\s*start_link,
-      output: supervisor-calls-1
-      groups: { supervisor-module: 1 }
+      output: calls-1
+      groups: { module: 1 }
     - type: RegexNode
       content: "{result}"
       regex: \?\w*\((\w+),(worker|supervisor)\)
-      output: supervisor-calls-2
-      groups: { supervisor-module: 1 }
-    - { type: "FlattenListNode", flatten: ["{supervisor-calls-1}","{supervisor-calls-2}"], output: "supervisor-calls" }
-
-    - type: ForkJoinNode
-      forkTargets: [get-module-name]
-      targetToKeys: {get-module-name: {module: module}}
-
-    - type: MapJoinNode
-      mapTarget: "combine-supervisor-calls"
-      putElement: "element"
-      list: "{supervisor-calls}"
-      keys: { "supervisor-call": "supervisor-calls" }
-
-  combine-supervisor-calls:
-    - type: EchoNode
-      put: supervisor-call
-      value: "{module}->{{element}@supervisor-module}"
+      output: calls-2
+      groups: { module: 1 }
+    - { type: "FlattenListNode", flatten: ["{calls-1}","{calls-2}"], output: "calls" }
 
 
-
-
-  get-variable-mod-calls:
-    - type: MapJoinNode
-      putElement: element
-      list: "{result}"
-      mapTarget: "filter-variable-mod-calls"
-      keys: { variable-mod-calls: "variable-mod-calls" }
-    - { type: "FlattenListNode", flatten: "{variable-mod-calls}", output: "variable-mod-calls" }
-
-
-  filter-variable-mod-calls:
-    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
+  filter-variable-calls:
     - type: RegexNode
       content: "{result}"
       regex: ([A-Z]+\w*):\s*\w*\(
-      output: "variable-mod-calls"
-      "groups": { variable-module: 1 }
-
-    - type: ForkJoinNode
-      forkTargets: [get-module-name]
-      targetToKeys: {get-module-name: {module: module}}
-
-    - type: MapJoinNode
-      mapTarget: "combine-variable-mod-calls"
-      putElement: "element"
-      list: "{variable-mod-calls}"
-      keys: { "variable-mod-call": "variable-mod-calls" }
-
-  combine-variable-mod-calls:
-    - type: EchoNode
-      put: variable-mod-call
-      value: "{module}->{{element}@variable-module}"
+      output: "calls"
+      "groups": { module: 1 }
 
 
-
-
-
-
-
-  get-static-mod-calls:
-    - type: MapJoinNode
-      putElement: element
-      list: "{result}"
-      mapTarget: "filter-static-mod-calls"
-      keys: { static-mod-calls: "static-mod-calls" }
-    - { type: "FlattenListNode", flatten: "{static-mod-calls}", output: "static-mod-calls" }
-
-  filter-static-mod-calls:
-    - { type: "ReadFileNode", inputFile: "{element}", output: "result" }
+  filter-static-calls:
     - type: RegexNode
       content: "{result}"
       regex: \s([a-z0-9_]+):\s*\w*\(
-      output: "static-mod-calls"
-      "groups": { static-module: 1 }
+      output: "calls"
+      "groups": { module: 1 }
 
-    - type: ForkJoinNode
-      forkTargets: [get-module-name]
-      targetToKeys: {get-module-name: {module: module}}
-
-    - type: MapJoinNode
-      mapTarget: "combine-static-mod-calls"
-      putElement: "element"
-      list: "{static-mod-calls}"
-      keys: { "static-mod-call": "static-mod-calls" }
-
-  combine-static-mod-calls:
-    - type: EchoNode
-      put: static-mod-call
-      value: "{module}->{{element}@static-module}"

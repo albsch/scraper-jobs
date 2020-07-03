@@ -1,0 +1,117 @@
+digraph G {
+	subgraph "cluster_emodgraph" {
+		style=filled;
+		color=grey;
+		label = "emodgraph";
+
+		subgraph "cluster_filter-static-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.filter-static-calls.0" [shape=rectangle, label="RegexNode\n<0>"]; 
+			label = "filter-static-calls";
+		}
+		subgraph "cluster_filter-variable-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.filter-variable-calls.0" [shape=rectangle, label="RegexNode\n<0>"]; 
+			label = "filter-variable-calls";
+		}
+		subgraph "cluster_get-module-name" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.get-module-name.0" [shape=rectangle, label="RegexNode\n<0>"]; "emodgraph.get-module-name.1" [shape=rectangle, label="EchoNode\n<1>"]; 
+			label = "get-module-name";
+		}
+		subgraph "cluster_get-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.get-calls.1" [shape=rectangle, label="FlattenListNode\n<1>"]; "emodgraph.get-calls.0" [shape=rectangle, label="MapJoinNode\n<0>"]; 
+			label = "get-calls";
+		}
+		subgraph "cluster_static-mods" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.static-mods.0" [shape=rectangle, label="EchoNode\n<0>"]; 
+			label = "static-mods";
+		}
+		subgraph "cluster_combine-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.combine-calls.0" [shape=rectangle, label="EchoNode\n<0>"]; 
+			label = "combine-calls";
+		}
+		subgraph "cluster_variable-mods" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.variable-mods.0" [shape=rectangle, label="EchoNode\n<0>"]; 
+			label = "variable-mods";
+		}
+		subgraph "cluster_filter-supervisor-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.filter-supervisor-calls.0" [shape=rectangle, label="RegexNode\n<0>"]; "emodgraph.filter-supervisor-calls.2" [shape=rectangle, label="FlattenListNode\n<2>"]; "emodgraph.filter-supervisor-calls.1" [shape=rectangle, label="RegexNode\n<1>"]; 
+			label = "filter-supervisor-calls";
+		}
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.start.1" [shape=rectangle, label="PipeNode\n<1>"]; "emodgraph.start.2" [shape=rectangle, label="ForkJoinNode\n<2>"]; "emodgraph.start.3" [shape=rectangle, label="ErlangDependencyGraphNode\n<3>"]; "emodgraph.start.0" [shape=rectangle, label="EchoNode\n<0>"]; 
+			label = "start";
+		}
+		subgraph "cluster_filter-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.filter-calls.0" [shape=rectangle, label="ReadFileNode\n<0>"]; "emodgraph.filter-calls.2" [shape=rectangle, label="ForkJoinNode\n<2>"]; "emodgraph.filter-calls.1" [shape=rectangle, label="RedirectNode\n<1>"]; "emodgraph.filter-calls.3" [shape=rectangle, label="MapJoinNode\n<3>"]; 
+			label = "filter-calls";
+		}
+		subgraph "cluster_supervisor-mods" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.supervisor-mods.0" [shape=rectangle, label="EchoNode\n<0>"]; 
+			label = "supervisor-mods";
+		}
+		subgraph "cluster_get-modules" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"emodgraph.get-modules.0" [shape=rectangle, label="PathGlobFileNode\n<0>"]; "emodgraph.get-modules.1" [shape=rectangle, label="MapJoinNode\n<1>"]; 
+			label = "get-modules";
+		}
+	}
+"emodgraph.start.2" -> "emodgraph.start.3" [ xlabel="join",]
+"emodgraph.start.2" -> "emodgraph.static-mods.0" [ xlabel="fork",]
+"emodgraph.start.2" -> "emodgraph.variable-mods.0" [ xlabel="fork",]
+"emodgraph.start.2" -> "emodgraph.supervisor-mods.0" [ xlabel="fork",]
+"emodgraph.get-modules.0" -> "emodgraph.get-modules.1" [ xlabel="forward",]
+"emodgraph.start.0" -> "emodgraph.start.1" [ xlabel="forward",]
+"emodgraph.filter-calls.1" -> "emodgraph.filter-calls.2" [ xlabel="forward",]
+"emodgraph.filter-calls.1" -> "emodgraph.filter-static-calls.0" [ xlabel="static",]
+"emodgraph.filter-calls.1" -> "emodgraph.filter-variable-calls.0" [ xlabel="variable",]
+"emodgraph.filter-calls.1" -> "emodgraph.filter-supervisor-calls.0" [ xlabel="supervisor",]
+"emodgraph.start.1" -> "emodgraph.get-modules.0" [ xlabel="pipe@0",]
+"emodgraph.start.1" -> "emodgraph.start.2" [ xlabel="forward",]
+"emodgraph.static-mods.0" -> "emodgraph.get-calls.0" [ xlabel="forward",]
+"emodgraph.filter-supervisor-calls.0" -> "emodgraph.filter-supervisor-calls.1" [ xlabel="forward",]
+"emodgraph.get-modules.1" -> "emodgraph.get-module-name.0" [ xlabel="map",color=red]
+"emodgraph.filter-supervisor-calls.1" -> "emodgraph.filter-supervisor-calls.2" [ xlabel="forward",]
+"emodgraph.supervisor-mods.0" -> "emodgraph.get-calls.0" [ xlabel="forward",]
+"emodgraph.filter-calls.3" -> "emodgraph.combine-calls.0" [ xlabel="map",color=red]
+"emodgraph.get-calls.0" -> "emodgraph.get-calls.1" [ xlabel="join",]
+"emodgraph.get-calls.0" -> "emodgraph.filter-calls.0" [ xlabel="map",color=red]
+"emodgraph.variable-mods.0" -> "emodgraph.get-calls.0" [ xlabel="forward",]
+"emodgraph.get-module-name.0" -> "emodgraph.get-module-name.1" [ xlabel="forward",]
+"emodgraph.filter-calls.0" -> "emodgraph.filter-calls.1" [ xlabel="forward",]
+"emodgraph.filter-calls.2" -> "emodgraph.filter-calls.3" [ xlabel="join",]
+"emodgraph.filter-calls.2" -> "emodgraph.get-module-name.0" [ xlabel="fork",]
+}

@@ -8,3 +8,8 @@ Running
 	java -jar scraper-0.12-bundled.jar
 
 produces a graph in the current working directory.
+
+
+# Control Flow Graph
+
+![](cfg.png)

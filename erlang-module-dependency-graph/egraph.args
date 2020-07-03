@@ -1,4 +1,4 @@
 src-files-glob=glob:**/*.erl
-src-files-root=src/
+src-files-root=/home/schimpf/git/antidote/src
 
 
