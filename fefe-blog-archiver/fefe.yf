@@ -3,15 +3,6 @@ name: fefe
 graphs:
 
   start:
-    - type: UserInputNode
-      hidden: false
-      key: "recipient"
-      prompt: "Enter Telegram Recipient Token"
-    - type: UserInputNode
-      hidden: false
-      key: "bot-token"
-      prompt: "Enter Telegram Bot Token"
-   
     - type: PeriodicNode
       log: Starting fefe archiver
       onPeriod: on-period
@@ -23,6 +14,8 @@ graphs:
   on-period:
     - type: HttpRequestNode
       url: "http://blog.fefe.de"
+      put: "response"
+
 
     - type: HtmlCssQueryNode
       html: "{response}"
