@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  egraph:
+    image: albsch/scraper:0.12.0
+    container_name: egraph
+    volumes:
+      - ./lib:/nodes
+      - .:/rt
+        #- /the/path/to/erlang/src:/target-src

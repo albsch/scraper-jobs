@@ -21,3 +21,9 @@ If it is not the only `yf` file, execute `scraper fefe.yf`instead.
 
 # Flow Graph:
 ![image](https://user-images.githubusercontent.com/38429047/76775323-7b0dfb00-67a5-11ea-8e37-438211fc7234.png)
+
+# Quickstart Docker:
+
+1. Set `bot-token` to your telegram bot token and `recipient` to your recipient ID
+2. Make sure you can receive messages from your telegram bot
+3. Use `docker-compose up` to start the workflow

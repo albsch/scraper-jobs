@@ -3,13 +3,12 @@
 Define source location in `egraph.args` appropriately.
 Macros can be set, too (see example configurations).
 
-Running
-
-	java -jar scraper-0.12-bundled.jar
-
-produces a graph in the current working directory.
-
 
 # Control Flow Graph
 
 ![](cfg.png)
+
+# Quickstart Docker
+
+1. Bind your source folder in `docker-compose.yml`
+2. Execute `docker-compose up`
