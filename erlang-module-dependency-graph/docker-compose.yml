@@ -2,9 +2,9 @@ version: '2'
 
 services:
   egraph:
-    image: albsch/scraper:0.13.1
+    image: albsch/scraper:0.13.2
     container_name: egraph
     volumes:
       - ./lib:/nodes
       - .:/rt
-        #- /the/path/to/erlang/src:/target-src
+        #- /path/to/erlang/src:/target-src
