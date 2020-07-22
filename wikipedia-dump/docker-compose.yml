@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  wiki:
+    image: albsch/scraper:0.13.5
+    restart: always
+    container_name: wiki
+    volumes:
+      - ./lib:/nodes
+      - .:/rt
+      - ~/srv/wikimedia/:/srv/wikimedia/
