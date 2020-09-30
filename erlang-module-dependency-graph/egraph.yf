@@ -91,12 +91,12 @@ graphs:
   filter-supervisor-calls:
     - type: RegexNode
       content: "{result}"
-      regex: \{(\w+),\s*start_link,
+      regex: \{([a-z]+),\s*start_link,
       output: calls-1
       groups: { module: 1 }
     - type: RegexNode
       content: "{result}"
-      regex: \?\w*\((\w+),(worker|supervisor)\)
+      regex: \?\w*\((\w+),\s*(worker|supervisor)\)
       output: calls-2
       groups: { module: 1 }
     - { type: "FlattenListNode", flatten: ["{calls-1}","{calls-2}"], output: "calls" }
@@ -113,7 +113,7 @@ graphs:
   filter-static-calls:
     - type: RegexNode
       content: "{result}"
-      regex: \s([a-z0-9_]+):\s*\w*\(
+      regex: ([a-z0-9_]+):\s*\w*\(
       output: "calls"
       "groups": { module: 1 }
 
