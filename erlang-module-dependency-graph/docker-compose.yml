@@ -2,7 +2,7 @@ version: '2'
 
 services:
   egraph:
-    image: albsch/scraper:0.13.3
+    image: albsch/scraper:0.16.1
     container_name: egraph
     volumes:
       - ./lib:/nodes

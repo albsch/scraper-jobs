@@ -2,7 +2,7 @@ version: '2'
 
 services:
   mydealz:
-    image: albsch/scraper:0.15.1
+    image: albsch/scraper:0.16.1
     restart: always
     container_name: mydealz
     volumes:
