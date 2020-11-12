@@ -1,100 +1,105 @@
----
-name: fefe
-graphs:
-
-  start:
-    - type: PeriodicNode
-      log: Starting fefe archiver
-      onPeriod: on-period
-      period: 4800000
-      service: fefe
-      threads: 10
+start:
+  - type: PeriodicNode
+    log: Starting fefe archiver
+    onPeriod: on-period
+    period: 4800000
+    service: fefe
+    threads: 10
 
 
-  on-period:
-    - type: HttpRequestNode
-      url: "http://blog.fefe.de"
-      put: "response"
+on-period:
+  - type: HttpRequestNode
+    url: "http://blog.fefe.de"
+    put: "response"
 
 
-    - type: HtmlCssQueryNode
-      html: "{response}"
-      query: "body>ul>li"
-      textOnly: false
+  - type: HtmlCssQueryNode
+    html: "{response}"
+    query: "body>ul>li"
+    elementOutput: HTML
 
-    - type: MapNode
-      list: "{result}"
-      mapTarget: process-post
-
-
-  process-post:
-    - type: StringReplaceNode
-      content: "{element}"
-      replace: "<p.*?>"
-      with: "\n"
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "</p>"
-      with: "\n"
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "<a\\shref=\"(.*?)\">(.*?)<\\/a>"
-      with: "$2 ($1)"
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "\\?ts="
-      with: "http://blog.fefe.de?ts="
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "^\\[l\\]\\s"
-      with: ""
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "<blockquote.*?>"
-      with: "---"
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "</blockquote>"
-      with: "---\n"
-
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "(\\(.*?\\))\\s([\\s\\S]*)"
-      with: "$2\n$1"
-
-      # correctly link ptrace links
-    - type: StringReplaceNode
-      content: "{output}"
-      replace: "\\(//ptrace"
-      with: "\\(http://ptrace"
-
-    - type: HashNode
-      content: "{output}"
-      output: "hash"
-
-    - type: PersistentDuplicateCheckNode
-      persistentStore: "store"
-      appendIfNotFound: "{hash}"
-      content: "{hash}"
-
-    - type: IfThenElseNode
-      condition: "{exists}"
-      trueTarget: duplicate-post
-      falseTarget: not-duplicate-post
+  - type: MapNode
+    list: "{result}"
+    mapTarget: process-post
 
 
-  duplicate-post:
-    - type: EchoNode
+process-post:
+  - type: StringReplaceNode
+    content: "{element}"
+    output: nop1
+    replace: "<p.*?>"
+    with: "\n"
 
-  not-duplicate-post:
-    - type: TelegramNode
-      message: "{output}"
-      recipients:
-        - "{recipient}"
-      botToken: "{bot-token}"
+  - type: StringReplaceNode
+    content: "{nop1}"
+    replace: "</p>"
+    with: "\n"
+    output: nop
+
+  - type: StringReplaceNode
+    content: "{nop}"
+    replace: "<a\\shref=\"(.*?)\">(.*?)<\\/a>"
+    with: "$2 ($1)"
+    output: extlinks
+
+  - type: StringReplaceNode
+    content: "{extlinks}"
+    replace: "\\?ts="
+    with: "http://blog.fefe.de?ts="
+    output: intlinks
+
+  - type: StringReplaceNode
+    content: "{intlinks}"
+    replace: "^\\[l\\]\\s"
+    with: ""
+    output: escape
+
+  - type: StringReplaceNode
+    content: "{escape}"
+    replace: "<blockquote.*?>"
+    with: "---"
+    output: blocks
+
+  - type: StringReplaceNode
+    content: "{blocks}"
+    replace: "</blockquote>"
+    with: "---\n"
+    output: blockend
+
+  - type: StringReplaceNode
+    content: "{blockend}"
+    replace: "(\\(.*?\\))\\s([\\s\\S]*)"
+    with: "$2\n$1"
+    output: escape2
+
+    # correctly link ptrace links
+  - type: StringReplaceNode
+    content: "{escape2}"
+    replace: "\\(//ptrace"
+    with: "\\(http://ptrace"
+    output: cleantxt
+
+  - type: HashNode
+    content: "{cleantxt}"
+    output: "hash"
+
+  - type: PersistentDuplicateCheckNode
+    persistentStore: "store"
+    appendIfNotFound: "{hash}"
+    content: "{hash}"
+
+  - type: IfThenElseNode
+    condition: "{exists}"
+    trueTarget: duplicate-post
+    falseTarget: not-duplicate-post
+
+
+duplicate-post:
+  - type: EchoNode
+
+not-duplicate-post:
+  - type: TelegramNode
+    message: "{cleantxt}"
+    recipients:
+      - "{recipient}"
+    botToken: "{bot-token}"

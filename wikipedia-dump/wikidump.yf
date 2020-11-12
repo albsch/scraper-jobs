@@ -5,14 +5,14 @@ graphs:
   start:
       # root site
     - { type: EchoNode, value: "https://en.wikipedia.org", put: "root" }
-    - { type: EchoNode, value: "/wiki/Computer_science", put: "link", goTo: store-new-link}
+    - { type: EchoNode, value: "/wiki/Computer_science", put: "new-link", goTo: store-new-link}
 
   store-new-link:
     - { type: PipeNode, pipeTargets: [found-new-link, for-each-link] }
 
   # stores a link into a folder which is monitored for processing links
   found-new-link:
-    - { type: Base64EncodeNode, encode: "{link}", output: enclink }
+    - { type: Base64EncodeNode, encode: "{new-link}", output: enclink }
 
                                 # change link collection folder
     - { type: WriteLineToFileNode, output: "/srv/wikimedia/links/{enclink}", line: "{enclink}", overwrite: true}
@@ -25,18 +25,20 @@ graphs:
       fileTarget: process-encoded-link
 
   process-encoded-link:
-    - { type: Base64DecodeNode, decode: "{link}", output: link }
+    - { type: Base64DecodeNode, decode: "{link}", output: decoded-link }
+    # allow link to be written again
+    - { type: LetInNode, keys: [root, decoded-link] }
 
     - type: HttpRequestNode
       holdOnReservation: 5000
       cache: "/srv/wikimedia/dump/"                         # change static html output folder
-      url: "{root}{link}"
+      url: "{root}{decoded-link}"
       put: html
 
     - type: HtmlCssQueryNode
       html: "{html}"
       query: "a[href]"
-      put: link
+      put: next-link
       collect: false
       streamTarget: store
       elementOutput: "ATTR"
@@ -46,7 +48,7 @@ graphs:
     # filter for valid links
     - type: StringContainsNode
       regex: "\\^\\/wiki\\/\\[\\^:\\]+$"
-      content: "{link}"
+      content: "{next-link}"
       output: filter
 
     - { type: IfThenElseNode, condition: "{filter}", trueTarget: store-new-link }

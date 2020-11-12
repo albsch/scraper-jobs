@@ -7,8 +7,8 @@ Make sure to set the 'bot-token' key and 'recipient' key correctly.
 To fix the keys on startup, create a 'fefe.args' file and define these two keys there:
 
 ```
-bot-token=...
-recipient=...
+bot-token="..."
+recipient="..."
 ```
 
 To start this workflow, execute `scraper` in the same directory as `fefe.yf`. 

@@ -15,3 +15,5 @@ Progress-preserving, restart is possible at any time.
 * [Dev nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/dev-v0.4.0)
 
 # Flow Graph:
+
+![](cfg.png)
