@@ -1,0 +1,45 @@
+digraph G {
+	subgraph "cluster_mydealz" {
+		style=filled;
+		color=grey;
+		label = "mydealz";
+
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"mydealz.start.0" [shape=rectangle, label="Periodic\n<0>"]; 
+			label = "start";
+		}
+		subgraph "cluster_onPeriod" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"mydealz.onPeriod.0" [shape=rectangle, label="HttpRequest\n<0>"]; "mydealz.onPeriod.1" [shape=rectangle, label="HtmlCssQuery\n<1>"]; "mydealz.onPeriod.2" [shape=rectangle, label="Map\n<2>"]; 
+			label = "onPeriod";
+		}
+		subgraph "cluster_thread" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"mydealz.thread.3" [shape=rectangle, label="PersistentDuplicateCheck\n<3>"]; "mydealz.thread.0" [shape=rectangle, label="HtmlCssQuery\n<0>"]; "mydealz.thread.1" [shape=rectangle, label="HtmlCssQuery\n<1>"]; "mydealz.thread.2" [shape=rectangle, label="Hash\n<2>"]; "mydealz.thread.4" [shape=rectangle, label="IfThenElse\n<4>"]; 
+			label = "thread";
+		}
+		subgraph "cluster_sendTelegram" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"mydealz.sendTelegram.0" [shape=rectangle, label="Telegram\n<0>"]; 
+			label = "sendTelegram";
+		}
+	}
+"mydealz.onPeriod.0" -> "mydealz.onPeriod.1" [ xlabel="forward",]
+"mydealz.start.0" -> "mydealz.onPeriod.0" [ xlabel="periodic",style=dashed,color=red]
+"mydealz.onPeriod.1" -> "mydealz.onPeriod.2" [ xlabel="forward",]
+"mydealz.onPeriod.2" -> "mydealz.thread.0" [ xlabel="map",style=dashed,color=red]
+"mydealz.thread.3" -> "mydealz.thread.4" [ xlabel="forward",]
+"mydealz.thread.0" -> "mydealz.thread.1" [ xlabel="forward",]
+"mydealz.thread.1" -> "mydealz.thread.2" [ xlabel="forward",]
+"mydealz.thread.2" -> "mydealz.thread.3" [ xlabel="forward",]
+"mydealz.thread.4" -> "mydealz.sendTelegram.0" [ xlabel="false",]
+}

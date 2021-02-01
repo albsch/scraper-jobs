@@ -20,7 +20,8 @@ If it is not the only `yf` file, execute `scraper fefe.yf`instead.
 * [Dev nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/dev-v0.5.0)
 
 # Flow Graph:
-![image](https://user-images.githubusercontent.com/38429047/76775323-7b0dfb00-67a5-11ea-8e37-438211fc7234.png)
+
+![](cfg.png)
 
 # Quickstart Docker:
 

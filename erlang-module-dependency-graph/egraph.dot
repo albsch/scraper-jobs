@@ -1,0 +1,117 @@
+digraph G {
+	subgraph "cluster_egraph" {
+		style=filled;
+		color=grey;
+		label = "egraph";
+
+		subgraph "cluster_filter-static-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.filter-static-calls.0" [shape=rectangle, label="Regex\n<0>"]; 
+			label = "filter-static-calls";
+		}
+		subgraph "cluster_filter-variable-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.filter-variable-calls.0" [shape=rectangle, label="Regex\n<0>"]; 
+			label = "filter-variable-calls";
+		}
+		subgraph "cluster_get-module-name" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.get-module-name.1" [shape=rectangle, label="Echo\n<1>"]; "egraph.get-module-name.0" [shape=rectangle, label="Regex\n<0>"]; 
+			label = "get-module-name";
+		}
+		subgraph "cluster_get-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.get-calls.1" [shape=rectangle, label="FlattenList\n<1>"]; "egraph.get-calls.0" [shape=rectangle, label="MapJoin\n<0>"]; 
+			label = "get-calls";
+		}
+		subgraph "cluster_static-mods" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.static-mods.0" [shape=rectangle, label="Echo\n<0>"]; 
+			label = "static-mods";
+		}
+		subgraph "cluster_combine-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.combine-calls.0" [shape=rectangle, label="Echo\n<0>"]; 
+			label = "combine-calls";
+		}
+		subgraph "cluster_filter-supervisor-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.filter-supervisor-calls.1" [shape=rectangle, label="Regex\n<1>"]; "egraph.filter-supervisor-calls.0" [shape=rectangle, label="Regex\n<0>"]; "egraph.filter-supervisor-calls.2" [shape=rectangle, label="FlattenList\n<2>"]; 
+			label = "filter-supervisor-calls";
+		}
+		subgraph "cluster_variable-mods" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.variable-mods.0" [shape=rectangle, label="Echo\n<0>"]; 
+			label = "variable-mods";
+		}
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.start.0" [shape=rectangle, label="Echo\n<0>"]; "egraph.start.2" [shape=rectangle, label="ForkJoin\n<2>"]; "egraph.start.3" [shape=rectangle, label="ErlangDependencyGraph\n<3>"]; "egraph.start.1" [shape=rectangle, label="Pipe\n<1>"]; 
+			label = "start";
+		}
+		subgraph "cluster_filter-calls" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.filter-calls.2" [shape=rectangle, label="ForkJoin\n<2>"]; "egraph.filter-calls.1" [shape=rectangle, label="Redirect\n<1>"]; "egraph.filter-calls.0" [shape=rectangle, label="ReadFile\n<0>"]; "egraph.filter-calls.3" [shape=rectangle, label="MapJoin\n<3>"]; 
+			label = "filter-calls";
+		}
+		subgraph "cluster_supervisor-mods" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.supervisor-mods.0" [shape=rectangle, label="Echo\n<0>"]; 
+			label = "supervisor-mods";
+		}
+		subgraph "cluster_get-modules" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"egraph.get-modules.0" [shape=rectangle, label="PathGlobFile\n<0>"]; "egraph.get-modules.1" [shape=rectangle, label="MapJoin\n<1>"]; 
+			label = "get-modules";
+		}
+	}
+"egraph.start.0" -> "egraph.start.1" [ xlabel="forward",]
+"egraph.get-module-name.0" -> "egraph.get-module-name.1" [ xlabel="forward",]
+"egraph.filter-supervisor-calls.1" -> "egraph.filter-supervisor-calls.2" [ xlabel="forward",]
+"egraph.get-modules.0" -> "egraph.get-modules.1" [ xlabel="forward",]
+"egraph.start.1" -> "egraph.get-modules.0" [ xlabel="pipe0",]
+"egraph.start.1" -> "egraph.start.2" [ xlabel="forward",]
+"egraph.filter-supervisor-calls.0" -> "egraph.filter-supervisor-calls.1" [ xlabel="forward",]
+"egraph.filter-calls.3" -> "egraph.combine-calls.0" [ xlabel="map",color=red]
+"egraph.static-mods.0" -> "egraph.get-calls.0" [ xlabel="forward",]
+"egraph.filter-calls.0" -> "egraph.filter-calls.1" [ xlabel="forward",]
+"egraph.supervisor-mods.0" -> "egraph.get-calls.0" [ xlabel="forward",]
+"egraph.get-modules.1" -> "egraph.get-module-name.0" [ xlabel="map",color=red]
+"egraph.start.2" -> "egraph.static-mods.0" [ xlabel="fork",]
+"egraph.start.2" -> "egraph.variable-mods.0" [ xlabel="fork",]
+"egraph.start.2" -> "egraph.supervisor-mods.0" [ xlabel="fork",]
+"egraph.start.2" -> "egraph.start.3" [ xlabel="forward",]
+"egraph.variable-mods.0" -> "egraph.get-calls.0" [ xlabel="forward",]
+"egraph.filter-calls.1" -> "egraph.filter-static-calls.0" [ xlabel="static",]
+"egraph.filter-calls.1" -> "egraph.filter-variable-calls.0" [ xlabel="variable",]
+"egraph.filter-calls.1" -> "egraph.filter-supervisor-calls.0" [ xlabel="supervisor",]
+"egraph.filter-calls.1" -> "egraph.filter-calls.2" [ xlabel="forward",]
+"egraph.filter-calls.2" -> "egraph.get-module-name.0" [ xlabel="fork",]
+"egraph.filter-calls.2" -> "egraph.filter-calls.3" [ xlabel="forward",]
+"egraph.get-calls.0" -> "egraph.filter-calls.0" [ xlabel="map",color=red]
+"egraph.get-calls.0" -> "egraph.get-calls.1" [ xlabel="forward",]
+}
