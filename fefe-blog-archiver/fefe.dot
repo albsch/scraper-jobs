@@ -1,0 +1,60 @@
+digraph G {
+	subgraph "cluster_fefe" {
+		style=filled;
+		color=grey;
+		label = "fefe";
+
+		subgraph "cluster_not-duplicate-post" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"fefe.not-duplicate-post.0" [shape=rectangle, label="Telegram\n<0>"]; 
+			label = "not-duplicate-post";
+		}
+		subgraph "cluster_process-post" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"fefe.process-post.3" [shape=rectangle, label="StringReplace\n<3>"]; "fefe.process-post.1" [shape=rectangle, label="StringReplace\n<1>"]; "fefe.process-post.6" [shape=rectangle, label="StringReplace\n<6>"]; "fefe.process-post.11" [shape=rectangle, label="IfThenElse\n<11>"]; "fefe.process-post.0" [shape=rectangle, label="StringReplace\n<0>"]; "fefe.process-post.9" [shape=rectangle, label="Hash\n<9>"]; "fefe.process-post.10" [shape=rectangle, label="PersistentDuplicateCheck\n<10>"]; "fefe.process-post.4" [shape=rectangle, label="StringReplace\n<4>"]; "fefe.process-post.2" [shape=rectangle, label="StringReplace\n<2>"]; "fefe.process-post.5" [shape=rectangle, label="StringReplace\n<5>"]; "fefe.process-post.8" [shape=rectangle, label="StringReplace\n<8>"]; "fefe.process-post.7" [shape=rectangle, label="StringReplace\n<7>"]; 
+			label = "process-post";
+		}
+		subgraph "cluster_on-period" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"fefe.on-period.0" [shape=rectangle, label="HttpRequest\n<0>"]; "fefe.on-period.2" [shape=rectangle, label="Map\n<2>"]; "fefe.on-period.1" [shape=rectangle, label="HtmlCssQuery\n<1>"]; 
+			label = "on-period";
+		}
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"fefe.start.0" [shape=rectangle, label="Periodic\n<0>"]; 
+			label = "start";
+		}
+		subgraph "cluster_duplicate-post" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"fefe.duplicate-post.0" [shape=rectangle, label="Echo\n<0>"]; 
+			label = "duplicate-post";
+		}
+	}
+"fefe.process-post.3" -> "fefe.process-post.4" [ xlabel="forward",]
+"fefe.process-post.1" -> "fefe.process-post.2" [ xlabel="forward",]
+"fefe.process-post.11" -> "fefe.duplicate-post.0" [ xlabel="true",]
+"fefe.process-post.11" -> "fefe.not-duplicate-post.0" [ xlabel="false",]
+"fefe.on-period.0" -> "fefe.on-period.1" [ xlabel="forward",]
+"fefe.process-post.0" -> "fefe.process-post.1" [ xlabel="forward",]
+"fefe.process-post.9" -> "fefe.process-post.10" [ xlabel="forward",]
+"fefe.process-post.10" -> "fefe.process-post.11" [ xlabel="forward",]
+"fefe.process-post.2" -> "fefe.process-post.3" [ xlabel="forward",]
+"fefe.process-post.7" -> "fefe.process-post.8" [ xlabel="forward",]
+"fefe.on-period.1" -> "fefe.on-period.2" [ xlabel="forward",]
+"fefe.start.0" -> "fefe.on-period.0" [ xlabel="periodic",style=dashed,color=red]
+"fefe.on-period.2" -> "fefe.process-post.0" [ xlabel="map",style=dashed,color=red]
+"fefe.process-post.8" -> "fefe.process-post.9" [ xlabel="forward",]
+"fefe.process-post.4" -> "fefe.process-post.5" [ xlabel="forward",]
+"fefe.process-post.5" -> "fefe.process-post.6" [ xlabel="forward",]
+"fefe.process-post.6" -> "fefe.process-post.7" [ xlabel="forward",]
+}
