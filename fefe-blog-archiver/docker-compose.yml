@@ -2,7 +2,7 @@ version: '2'
 
 services:
   fefe-archiver:
-    image: albsch/scraper:0.16.2
+    image: albsch/scraper:0.17.0
     restart: always
     container_name: fefe-archiver
     volumes:

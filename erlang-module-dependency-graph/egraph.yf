@@ -1,46 +1,46 @@
 start:
-  - type: EchoNode
+  - type: Echo
     log:
       source: "Gathering modules at {src-files-root}"
       glob: "Glob: {src-files-glob}"
 
-  - type: PipeNode
+  - type: Pipe
     pipeTargets: [get-modules]
 
-  - type: ForkJoinNode
+  - type: ForkJoin
     forkTargets: [ static-mods, variable-mods, supervisor-mods ]
     targetToKeys:
       static-mods: { calls: static-mod-calls }
       variable-mods: { calls: variable-mod-calls }
       supervisor-mods: { calls: supervisor-calls }
 
-  - type: ErlangDependencyGraphNode
+  - type: ErlangDependencyGraph
 
-static-mods: [ { type: EchoNode, put: redirect, value: static, goTo: get-calls} ]
-variable-mods: [ { type: EchoNode, put: redirect, value: variable, goTo: get-calls} ]
-supervisor-mods: [ { type: EchoNode, put: redirect, value: supervisor, goTo: get-calls} ]
+static-mods: [ { type: Echo, put: redirect, value: static, goTo: get-calls} ]
+variable-mods: [ { type: Echo, put: redirect, value: variable, goTo: get-calls} ]
+supervisor-mods: [ { type: Echo, put: redirect, value: supervisor, goTo: get-calls} ]
 
 
 get-module-name:
-  - type: RegexNode
+  - type: Regex
     content: "{element}"
     regex:  (.*\/)?(\w+)\.erl
     output: "output"
     groups: { "module": 2 }
 
-  - { type: "EchoNode", put: "module", value: "{{{output}}[0]@module}" }
+  - { type: "Echo", put: "module", value: "{{{output}}[0]@module}" }
 
 
 
 
 get-modules:
-  - type: PathGlobFileNode
+  - type: PathGlobFile
     includeRoot: true
     root: "{src-files-root}"
     glob: "{src-files-glob}"
     output: "result"
 
-  - type: MapJoinNode
+  - type: MapJoin
     putElement: element
     list: "{result}"
     mapTarget: "get-module-name"
@@ -49,29 +49,29 @@ get-modules:
 
 
 get-calls:
-  - type: MapJoinNode
+  - type: MapJoin
     putElement: element
     list: "{result}"
     mapTarget: "filter-calls"
     keys: { all-calls: "all-calls" }
-  - { type: "FlattenListNode", flatten: "{all-calls}", output: "calls" }
+  - { type: "FlattenList", flatten: "{all-calls}", output: "calls" }
 
 
 
 filter-calls:
-  - { type: "ReadFileNode", inputFile: "{element}", output: "filter-result" }
+  - { type: "ReadFile", inputFile: "{element}", output: "filter-result" }
 
-  - type: RedirectNode
+  - type: Redirect
     redirectMap:
       static: filter-static-calls
       variable: filter-variable-calls
       supervisor: filter-supervisor-calls
 
-  - type: ForkJoinNode
+  - type: ForkJoin
     forkTargets: [get-module-name]
     targetToKeys: {get-module-name: {module: module}}
 
-  - type: MapJoinNode
+  - type: MapJoin
     mapTarget: "combine-calls"
     putElement: "filter-element"
     list: "{calls}"
@@ -79,7 +79,7 @@ filter-calls:
 
 
 combine-calls:
-  - type: EchoNode
+  - type: Echo
     put: mod-call
     value: "{module}->{{filter-element}@module}"
 
@@ -87,21 +87,21 @@ combine-calls:
 
 
 filter-supervisor-calls:
-  - type: RegexNode
+  - type: Regex
     content: "{filter-result}"
     regex: \{([a-z]+),\s*start_link,
     output: calls-1
     groups: { module: 1 }
-  - type: RegexNode
+  - type: Regex
     content: "{filter-result}"
     regex: \?\w*\((\w+),\s*(worker|supervisor)\)
     output: calls-2
     groups: { module: 1 }
-  - { type: "FlattenListNode", flatten: ["{calls-1}","{calls-2}"], output: "calls" }
+  - { type: "FlattenList", flatten: ["{calls-1}","{calls-2}"], output: "calls" }
 
 
 filter-variable-calls:
-  - type: RegexNode
+  - type: Regex
     content: "{filter-result}"
     regex: ([A-Z]+\w*):\s*\w*\(
     output: "calls"
@@ -109,7 +109,7 @@ filter-variable-calls:
 
 
 filter-static-calls:
-  - type: RegexNode
+  - type: Regex
     content: "{filter-result}"
     regex: ([a-z0-9_]+):\s*\w*\(
     output: "calls"

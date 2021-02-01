@@ -14,8 +14,8 @@ To start this workflow, execute `scraper` in the same directory as `mydealz.yf`.
 
 # Dependencies
 
-* [Unstable nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/unstable-v0.2.1)
-* [Dev nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/dev-v0.4.0)
+* [Unstable nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/unstable-v0.3.0)
+* [Dev nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/dev-v0.5.0)
 
 # Flow Graph:
 ![image](https://user-images.githubusercontent.com/38429047/97875691-10e99c80-1d1b-11eb-8cdf-2b5b936902c2.png)

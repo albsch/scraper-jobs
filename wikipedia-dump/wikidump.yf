@@ -4,38 +4,38 @@ graphs:
 
   start:
       # root site
-    - { type: EchoNode, value: "https://en.wikipedia.org", put: "root" }
-    - { type: EchoNode, value: "/wiki/Computer_science", put: "new-link", goTo: store-new-link}
+    - { type: Echo, value: "https://en.wikipedia.org", put: "root" }
+    - { type: Echo, value: "/wiki/Computer_science", put: "new-link", goTo: store-new-link}
 
   store-new-link:
-    - { type: PipeNode, pipeTargets: [found-new-link, for-each-link] }
+    - { type: Pipe, pipeTargets: [found-new-link, for-each-link] }
 
   # stores a link into a folder which is monitored for processing links
   found-new-link:
-    - { type: Base64EncodeNode, encode: "{new-link}", output: enclink }
+    - { type: Base64Encode, encode: "{new-link}", output: enclink }
 
                                 # change link collection folder
-    - { type: WriteLineToFileNode, output: "/srv/wikimedia/links/{enclink}", line: "{enclink}", overwrite: true}
+    - { type: WriteLineToFile, output: "/srv/wikimedia/links/{enclink}", line: "{enclink}", overwrite: true}
 
   # processes each link in the folder
   for-each-link:
-    - type: MapFolderNode
+    - type: MapFolder
       folder: "/srv/wikimedia/links/"
       putFileName: link
       fileTarget: process-encoded-link
 
   process-encoded-link:
-    - { type: Base64DecodeNode, decode: "{link}", output: decoded-link }
+    - { type: Base64Decode, decode: "{link}", output: decoded-link }
     # allow link to be written again
-    - { type: LetInNode, keys: [root, decoded-link] }
+    - { type: LetIn, keys: [root, decoded-link] }
 
-    - type: HttpRequestNode
+    - type: HttpRequest
       holdOnReservation: 5000
       cache: "/srv/wikimedia/dump/"                         # change static html output folder
       url: "{root}{decoded-link}"
       put: html
 
-    - type: HtmlCssQueryNode
+    - type: HtmlCssQuery
       html: "{html}"
       query: "a[href]"
       put: next-link
@@ -46,10 +46,10 @@ graphs:
 
   store:
     # filter for valid links
-    - type: StringContainsNode
+    - type: StringContains
       regex: "\\^\\/wiki\\/\\[\\^:\\]+$"
       content: "{next-link}"
       output: filter
 
-    - { type: IfThenElseNode, condition: "{filter}", trueTarget: store-new-link }
+    - { type: IfThenElse, condition: "{filter}", trueTarget: store-new-link }
 

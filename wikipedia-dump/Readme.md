@@ -12,7 +12,7 @@ Progress-preserving, restart is possible at any time.
 
 # Dependencies
 
-* [Dev nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/dev-v0.4.0)
+* [Dev nodes](https://github.com/scraperflow/scraper-nodes/releases/tag/dev-v0.5.0)
 
 # Flow Graph:
 
