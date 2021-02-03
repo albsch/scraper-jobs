@@ -1,0 +1,72 @@
+digraph G {
+	subgraph "cluster_t" {
+		style=filled;
+		color=grey;
+		label = "t";
+
+		subgraph "cluster_not-duplicate-post" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.not-duplicate-post.0" [shape=rectangle, label="Telegram\n<0>"]; 
+			label = "not-duplicate-post";
+		}
+		subgraph "cluster_matchKeyword" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.matchKeyword.0" [shape=rectangle, label="ToLowerCase\n<0>"]; "t.matchKeyword.1" [shape=rectangle, label="ToLowerCase\n<1>"]; "t.matchKeyword.2" [shape=rectangle, label="StringContains\n<2>"]; 
+			label = "matchKeyword";
+		}
+		subgraph "cluster_getPage" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.getPage.0" [shape=rectangle, label="IntToString\n<0>"]; "t.getPage.1" [shape=rectangle, label="HttpRequest\n<1>"]; 
+			label = "getPage";
+		}
+		subgraph "cluster_matchedPost" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.matchedPost.0" [shape=rectangle, label="Hash\n<0>"]; "t.matchedPost.2" [shape=rectangle, label="IfThenElse\n<2>"]; "t.matchedPost.1" [shape=rectangle, label="PersistentDuplicateCheck\n<1>"]; 
+			label = "matchedPost";
+		}
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.start.0" [shape=rectangle, label="IntRange\n<0>"]; 
+			label = "start";
+		}
+		subgraph "cluster_checkLink" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.checkLink.3" [shape=rectangle, label="BooleanOp\n<3>"]; "t.checkLink.4" [shape=rectangle, label="IfThenElse\n<4>"]; "t.checkLink.0" [shape=rectangle, label="HtmlCssQuery\n<0>"]; "t.checkLink.2" [shape=rectangle, label="MapJoin\n<2>"]; "t.checkLink.1" [shape=rectangle, label="HtmlCssQuery\n<1>"]; 
+			label = "checkLink";
+		}
+		subgraph "cluster_processPage" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"t.processPage.0" [shape=rectangle, label="HtmlCssQuery\n<0>"]; 
+			label = "processPage";
+		}
+	}
+"t.checkLink.3" -> "t.checkLink.4" [ xlabel="forward",]
+"t.matchKeyword.0" -> "t.matchKeyword.1" [ xlabel="forward",]
+"t.matchKeyword.1" -> "t.matchKeyword.2" [ xlabel="forward",]
+"t.getPage.0" -> "t.getPage.1" [ xlabel="forward",]
+"t.getPage.1" -> "t.processPage.0" [ xlabel="forward",]
+"t.checkLink.4" -> "t.matchedPost.0" [ xlabel="true",]
+"t.matchedPost.0" -> "t.matchedPost.1" [ xlabel="forward",]
+"t.matchedPost.1" -> "t.matchedPost.2" [ xlabel="forward",]
+"t.start.0" -> "t.getPage.0" [ xlabel="stream",style=dashed,color=red]
+"t.checkLink.0" -> "t.checkLink.1" [ xlabel="forward",]
+"t.checkLink.2" -> "t.matchKeyword.0" [ xlabel="map",color=red]
+"t.checkLink.2" -> "t.checkLink.3" [ xlabel="forward",]
+"t.matchedPost.2" -> "t.not-duplicate-post.0" [ xlabel="false",]
+"t.checkLink.1" -> "t.checkLink.2" [ xlabel="forward",]
+"t.processPage.0" -> "t.checkLink.0" [ xlabel="stream",style=dashed,color=red]
+}
