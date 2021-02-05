@@ -1,0 +1,43 @@
+digraph G {
+	subgraph "cluster_v0" {
+		style=filled;
+		color=grey;
+		label = "v0";
+
+		subgraph "cluster_matchKeyword" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"v0.matchKeyword.1" [shape=rectangle, label="ToLowerCase\n<1>"]; "v0.matchKeyword.0" [shape=rectangle, label="ToLowerCase\n<0>"]; "v0.matchKeyword.2" [shape=rectangle, label="StringContains\n<2>"]; 
+			label = "matchKeyword";
+		}
+		subgraph "cluster_match" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"v0.match.0" [shape=rectangle, label="Echo\n<0>"]; 
+			label = "match";
+		}
+		subgraph "cluster_start" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"v0.start.0" [shape=rectangle, label="Input\n<0>"]; 
+			label = "start";
+		}
+		subgraph "cluster_processPage" {
+			style=filled;
+			color=lightgrey;
+			node [style=filled,color=white];
+			"v0.processPage.2" [shape=rectangle, label="IfThenElse\n<2>"]; "v0.processPage.1" [shape=rectangle, label="BooleanOp\n<1>"]; "v0.processPage.0" [shape=rectangle, label="MapJoin\n<0>"]; 
+			label = "processPage";
+		}
+	}
+"v0.matchKeyword.1" -> "v0.matchKeyword.2" [ xlabel="forward",]
+"v0.matchKeyword.0" -> "v0.matchKeyword.1" [ xlabel="forward",]
+"v0.processPage.2" -> "v0.match.0" [ xlabel="true",]
+"v0.processPage.1" -> "v0.processPage.2" [ xlabel="forward",]
+"v0.start.0" -> "v0.processPage.0" [ xlabel="stream",style=dashed,color=red]
+"v0.processPage.0" -> "v0.matchKeyword.0" [ xlabel="map",color=red]
+"v0.processPage.0" -> "v0.processPage.1" [ xlabel="forward",]
+}

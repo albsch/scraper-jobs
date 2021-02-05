@@ -1,5 +1,5 @@
 start:
-- { type: IntRange, from: 1, to: "{range}", collect: false, streamTarget: getPage }
+- { f: IntRange, from: 1, to: "{range}", collect: false, streamTarget: getPage }
 
 getPage:
 - { f: IntToString, string: page, integer: "{i}" }
