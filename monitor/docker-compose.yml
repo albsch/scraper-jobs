@@ -1,10 +1,10 @@
 version: '2'
 
 services:
-  mydealz:
-    image: albsch/scraper:0.17.3
+  keyword-monitor:
+    image: albsch/scraper:latest
     restart: always
-    container_name: mydealz
+    container_name: keyword-monitor
     volumes:
       - ./lib:/nodes
       - .:/rt

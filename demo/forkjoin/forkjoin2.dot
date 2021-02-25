@@ -1,0 +1,26 @@
+digraph G {
+			
+
+			"forkjoin2.A.0" [shape=rectangle, label="Echo\n"]; 
+
+			"forkjoin2.B.0" [shape=rectangle, label="ForkJoin\n"]; "forkjoin2.B.1" [shape=rectangle, label="Echo\n"]; 
+
+			"forkjoin2.C.0" [shape=rectangle, label="Echo\n"]; 
+
+			"forkjoin2.D.0" [shape=rectangle, label="Echo\n"]; 
+
+			"forkjoin2.start.0" [shape=rectangle, label="Map\n"]; 
+
+			"forkjoin2.forking.0" [shape=rectangle, label="ForkJoin\n"]; "forkjoin2.forking.3" [shape=rectangle, label="Output\n"]; "forkjoin2.forking.1" [shape=rectangle, label="Echo\n"]; "forkjoin2.forking.2" [shape=rectangle, label="IntToString\n"]; 
+
+
+"forkjoin2.forking.0" -> "forkjoin2.A.0" [ xlabel="fork",]
+"forkjoin2.forking.0" -> "forkjoin2.B.0" [ xlabel="fork",]
+"forkjoin2.forking.0" -> "forkjoin2.forking.1" [ xlabel="",]
+"forkjoin2.B.0" -> "forkjoin2.C.0" [ xlabel="fork",]
+"forkjoin2.B.0" -> "forkjoin2.D.0" [ xlabel="fork",]
+"forkjoin2.B.0" -> "forkjoin2.B.1" [ xlabel="",]
+"forkjoin2.start.0" -> "forkjoin2.forking.0" [ xlabel="map",style=dashed,color=red]
+"forkjoin2.forking.1" -> "forkjoin2.forking.2" [ xlabel="",]
+"forkjoin2.forking.2" -> "forkjoin2.forking.3" [ xlabel="",]
+}

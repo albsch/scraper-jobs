@@ -1,0 +1,11 @@
+start:
+- f: input
+  put: xl
+- f: fold
+  foldTarget: echo
+  putElement: line
+  list: "{xl}"
+
+echo:
+- f: output
+  output: "{line}"

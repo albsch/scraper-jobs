@@ -1,0 +1,47 @@
+start:
+  - f : Map
+    list: [1,2,3,4,5,6,7,8,9,10]
+    putElement: i
+    mapTarget: forking
+
+forking:
+  - f : ForkJoin
+    forkTargets: [A,B]
+    targetToKeys:
+      A: {k: str1}
+      B: {k: str2}
+
+  - f: echo
+    put: out
+    value: "{str1} {str2}"
+
+  - { f: IntToString, integer: "{i}", string: index }
+  - f: Output
+    output: "{index}: {out}"
+
+A:
+  - f: echo
+    put: k
+    value: "Hello"
+
+B:
+  - f: ForkJoin
+    forkTargets: [C,D]
+    targetToKeys:
+      C: {k: str3}
+      D: {k: str4}
+
+  - f: echo
+    put: k
+    value: "{str3} {str4}"
+
+C:
+  - f: echo
+    put: k
+    value: "World"
+
+D:
+  - f: echo
+    put: k
+    value: "!"
+
