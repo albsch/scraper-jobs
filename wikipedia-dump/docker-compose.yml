@@ -2,7 +2,7 @@ version: '2'
 
 services:
   wiki:
-    image: albsch/scraper:0.17.0
+    image: albsch/scraper:0.17.3
     restart: always
     container_name: wiki
     volumes:
